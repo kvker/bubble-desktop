@@ -1,8 +1,8 @@
 {
   "name": "bubble-desktop",
-  "version": "0.1.6",
+  "version": "0.1.8",
   "private": true,
-  "description": "桌面悬浮泡泡龙 —— 等 AI 干活时的摸鱼小游戏",
+  "description": "桌面悬浮泡泡桌宠 —— 等 AI 干活时的摸鱼小游戏",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -25,8 +25,8 @@
     "electron-builder": "^26.15.3"
   },
   "build": {
-    "appId": "com.bubble.desktop",
-    "productName": "泡泡龙键盘伴侣",
+    "appId": "cn.ilovecats.bubbledesktop",
+    "productName": "泡泡桌宠",
     "files": [
       "main.js",
       "main/**",
@@ -49,7 +49,7 @@
       "category": "public.app-category.utilities"
     },
     "dmg": {
-      "title": "泡泡龙键盘伴侣"
+      "title": "泡泡桌宠"
     },
     "npmRebuild": false
   },

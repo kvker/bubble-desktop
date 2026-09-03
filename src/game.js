@@ -1,4 +1,4 @@
-// 泡泡龙键盘伴侣 —— 不是游戏，是陪你敲键盘的桌面挂件
+// 泡泡桌宠 —— 不是游戏，是陪你敲键盘的桌面挂件
 // 全局按键驱动：左半键盘滚轮左转，右半键盘右转，空格吐泡泡
 import { Application, Assets, Graphics, Container, Sprite, Text } from './vendor/pixi.mjs';
 import {

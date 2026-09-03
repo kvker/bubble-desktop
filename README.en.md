@@ -1,4 +1,4 @@
-# Bubble Dragon Keyboard Companion
+# Bubble Desktop Pet
 
 > [中文文档](README.md)
 

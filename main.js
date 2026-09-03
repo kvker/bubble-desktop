@@ -381,7 +381,7 @@ function createTray() {
   const icon = nativeImage.createFromPath(path.join(__dirname, 'assets', 'tray-template.png'));
   icon.setTemplateImage(true);
   tray = new Tray(icon);
-  tray.setToolTip('泡泡龙键盘伴侣');
+  tray.setToolTip('泡泡桌宠');
   rebuildTrayMenu();
 }
 
