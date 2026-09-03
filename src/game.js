@@ -403,7 +403,8 @@ window.desktop.onTouchOffChanged((off) => {
 });
 function updateHover(y) {
   if (!touchEnabled) return;
-  const next = hovering ? y >= INTERACT_EXIT_Y : y >= INTERACT_ENTER_Y;
+  const logicalY = y / activeScale;   // 窗口按档位缩放时，clientY 为物理像素，需换算回逻辑坐标再比较阈值
+  const next = hovering ? logicalY >= INTERACT_EXIT_Y : logicalY >= INTERACT_ENTER_Y;
   if (next !== hovering) {
     hovering = next;
     window.desktop.setIgnoreMouse(!hovering);
