@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "id": "male",
+  "style": {
+    "fontSize": 44,
+    "fontWeight": "bold",
+    "fontFamily": "-apple-system, \"PingFang SC\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+    "fill": "#ffffff",
+    "stroke": {
+      "width": 6,
+      "color": "#000000"
+    },
+    "dropShadow": {
+      "distance": 3,
+      "alpha": 0.4,
+      "blur": 3
+    }
+  },
+  "states": {
+    "fire": {
+      "text": "左",
+      "animation": [
+        {
+          "prop": "scaleX",
+          "type": "pulse",
+          "amp": 0.16,
+          "duration": 0.25
+        },
+        {
+          "prop": "scaleY",
+          "type": "pulse",
+          "amp": 0.16,
+          "duration": 0.25,
+          "invert": true
+        },
+        {
+          "prop": "skewX",
+          "type": "sine",
+          "amp": 0.16,
+          "freq": 28
+        }
+      ]
+    },
+    "walk": {
+      "text": "左",
+      "animation": [
+        {
+          "prop": "scaleX",
+          "type": "sine",
+          "amp": 0.1,
+          "freq": 9
+        },
+        {
+          "prop": "scaleY",
+          "type": "sine",
+          "amp": 0.1,
+          "freq": 9,
+          "phase": 180
+        },
+        {
+          "prop": "skewX",
+          "type": "sine",
+          "amp": 0.06,
+          "freq": 13.5
+        }
+      ]
+    },
+    "idle": {
+      "text": "左",
+      "animation": [
+        {
+          "prop": "scaleY",
+          "type": "sine",
+          "amp": 0.02,
+          "freq": 2.2
+        },
+        {
+          "prop": "y",
+          "type": "sine",
+          "amp": 2.5,
+          "freq": 2.2
+        }
+      ]
+    }
+  },
+  "type": "text"
+}

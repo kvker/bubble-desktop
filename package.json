@@ -1,0 +1,61 @@
+{
+  "name": "bubble-desktop",
+  "version": "0.1.6",
+  "private": true,
+  "description": "桌面悬浮泡泡龙 —— 等 AI 干活时的摸鱼小游戏",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "pnpm dist",
+    "dev": "pnpm start",
+    "check": "node --check main.js && node --check preload.js && node --check main/*.js && node --input-type=module --check < src/game.js && node --check src/game/domain.mjs && node --check src/features/*.mjs && node --check scripts/vendor-pixi.js && node --check scripts/vendor-mitt.js && node --check stats-renderer.mjs",
+    "test": "node --test",
+    "verify": "pnpm run check && pnpm test && pnpm run validate:character",
+    "postinstall": "node scripts/vendor-pixi.js && node scripts/vendor-mitt.js",
+    "dist": "node scripts/bump-version.mjs && CSC_IDENTITY_AUTO_DISCOVERY=false ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/ ELECTRON_BUILDER_BINARIES_MIRROR=https://npmmirror.com/mirrors/electron-builder-binaries/ electron-builder",
+    "validate:character": "node scripts/validate-character.js"
+  },
+  "dependencies": {
+    "mitt": "^3.0.1",
+    "pixi.js": "^8.0.0",
+    "uiohook-napi": "^1.5.5"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.bubble.desktop",
+    "productName": "泡泡龙键盘伴侣",
+    "files": [
+      "main.js",
+      "main/**",
+      "preload.js",
+      "index.html",
+      "src/**",
+      "assets/**",
+      "stats.html",
+      "stats-renderer.mjs",
+      "skins/**"
+    ],
+    "asarUnpack": [
+      "node_modules/**/*.node"
+    ],
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.utilities"
+    },
+    "dmg": {
+      "title": "泡泡龙键盘伴侣"
+    },
+    "npmRebuild": false
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "electron-winstaller"
+    ]
+  }
+}

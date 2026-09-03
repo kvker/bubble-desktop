@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "type": "image",
+  "id": "img-sample",
+  "states": {
+    "fire": {
+      "image": "./fire.png",
+      "animation": [
+        { "prop": "scaleX", "type": "pulse", "amp": 0.16, "duration": 0.25 },
+        { "prop": "scaleY", "type": "pulse", "amp": 0.16, "duration": 0.25, "invert": true },
+        { "prop": "skewX",  "type": "sine",  "amp": 0.16, "freq": 28 }
+      ]
+    },
+    "walk": {
+      "image": "./walk.png",
+      "animation": [
+        { "prop": "scaleX", "type": "sine", "amp": 0.1,  "freq": 9 },
+        { "prop": "scaleY", "type": "sine", "amp": 0.1,  "freq": 9, "phase": 180 },
+        { "prop": "skewX",  "type": "sine", "amp": 0.06, "freq": 13.5 }
+      ]
+    },
+    "idle": {
+      "image": "./idle.png",
+      "animation": [
+        { "prop": "scaleY", "type": "sine", "amp": 0.02, "freq": 2.2 },
+        { "prop": "y", "type": "sine", "amp": 2.5, "freq": 2.2 }
+      ]
+    }
+  }
+}

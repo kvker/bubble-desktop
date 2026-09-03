@@ -1,0 +1,5 @@
+node_modules/
+src/vendor/pixi.mjs
+src/vendor/mitt.mjs
+dist/
+.DS_Store

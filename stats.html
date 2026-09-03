@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'" />
+  <title>统计面板（最近 7 天）</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      /* 列总宽 792 + 40 padding：窗口更窄时页面横向滚动兜底（sticky 仍相对页面滚动生效） */
+      min-width: 832px;
+      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 13px;
+      color: #1f2328;
+      background: #f6f8fa;
+      padding: 16px 20px 20px;
+    }
+    h1 { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+    /* 两个表不带滚动容器，sticky 表头相对页面（视口）生效；1024 宽窗口下列总宽 792px，无需横向滚动 */
+    #score-wrap { margin-bottom: 12px; }
+    #score-wrap td:first-child { font-weight: 600; }
+    table { border-collapse: collapse; width: 100%; background: #fff; table-layout: fixed; }
+    /* 两个表共享同一列宽模板，保证逐列对齐（超宽时容器横向滚动） */
+    #score-wrap th, #score-wrap td, #table-wrap th, #table-wrap td { width: 88px; }
+    th, td { border: 1px solid #d8dee4; padding: 5px 8px; text-align: right; white-space: nowrap; }
+    th:first-child, td:first-child { text-align: left; }
+    th { background: #f0f3f6; font-weight: 600; position: sticky; top: 0; }
+    th.today { background: #ffe9a8; }
+    td.today { background: #fff8e6; }
+    .empty { color: #8b949e; padding: 24px 0; text-align: center; }
+    tr.day-total td { background: #f0f3f6; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <h1>统计面板（最近 7 天）</h1>
+  <div id="score-wrap"></div>
+  <div id="table-wrap"></div>
+  <script type="module" src="./stats-renderer.mjs"></script>
+</body>
+</html>

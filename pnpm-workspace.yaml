@@ -1,0 +1,10 @@
+allowBuilds:
+  electron: true
+  electron-winstaller: false  # Windows 专用安装器，mac 不需要
+  uiohook-napi: true
+onlyBuiltDependencies:
+  - electron
+  - uiohook-napi
+overrides:
+  # app-builder-lib 26.15.3 依赖声明 ^3.0.0，但实际用到 4.x 才有的 ElectronDownloadCacheMode
+  '@electron/get': 4.0.3
