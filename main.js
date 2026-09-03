@@ -16,11 +16,17 @@ const { registerDesktopIpc } = require('./main/desktop-ipc');
 const { createKeyboardHook, loadNativeKeyboardHook } = require('./main/keyboard-hook');
 const { createWindowStateStore, keepBottomEdge } = require('./main/window-state');
 const { createSoundSettingsStore } = require('./main/sound-settings');
+const {
+  createWindowSettingsStore,
+  windowSizeForScale,
+  LOGICAL_SIZE,
+  SCALE_LEVELS,
+} = require('./main/window-settings');
 const mitt = require('mitt');
 const { createKeyStatsStore, createKeyStatsTracker } = require('./main/key-stats');
 const { createScoreStatsStore, registerScoreIpc } = require('./main/score-stats');
 
-const WINDOW_SIZE = { width: 360, height: 420 };
+const WINDOW_LOGICAL_SIZE = LOGICAL_SIZE;
 const LEGACY_WINDOW_HEIGHT = 620;
 const STATE_FILENAME = 'window-state.json';
 const TOGGLE_SHORTCUT = 'CmdOrCtrl+Shift+B';
@@ -68,10 +74,24 @@ function volumeSubmenu(label, kind) {
   };
 }
 
+// 挂件整体缩放档位（userData/window-settings.json）：默认 100%，托盘“尺寸”菜单可调
+const windowSettingsStore = createWindowSettingsStore({
+  getFilePath: () => path.join(app.getPath('userData'), 'window-settings.json'),
+});
+const savedWindowSettings = windowSettingsStore.load();
+let windowScale = SCALE_LEVELS.some((level) => Math.abs(level - savedWindowSettings.scale) < 1e-6)
+  ? savedWindowSettings.scale
+  : SCALE_LEVELS[0];
+
+// 当前实际窗口内容区尺寸（逻辑视口 × 缩放档位）
+function currentWindowSize() {
+  return windowSizeForScale(WINDOW_LOGICAL_SIZE, windowScale);
+}
+
 const windowState = createWindowStateStore({
   getFilePath: () => path.join(app.getPath('userData'), STATE_FILENAME),
   getDisplays: () => screen.getAllDisplays(),
-  windowSize: WINDOW_SIZE,
+  windowSize: currentWindowSize(),
 });
 
 function getWindow() {
@@ -139,14 +159,14 @@ function pushHookStatus() {
 function loadWindowPosition() {
   return keepBottomEdge(
     windowState.load(),
-    WINDOW_SIZE.height,
+    currentWindowSize().height,
     LEGACY_WINDOW_HEIGHT,
   );
 }
 function saveWindowPosition() {
   if (!win || win.isDestroyed()) return;
   const [x, y] = win.getPosition();
-  windowState.save({ x, y, windowHeight: WINDOW_SIZE.height });
+  windowState.save({ x, y, windowHeight: currentWindowSize().height });
 }
 
 function runSmokeCapture(targetWindow) {
@@ -162,7 +182,7 @@ function runSmokeCapture(targetWindow) {
 
 function createWindow() {
   win = new BrowserWindow({
-    ...WINDOW_SIZE,
+    ...currentWindowSize(),
     ...(loadWindowPosition() ?? {}),
     useContentSize: true,
     frame: false,
@@ -192,6 +212,7 @@ function createWindow() {
   win.webContents.on('did-finish-load', () => {
     pushHookStatus();
     pushSoundState();
+    pushWindowScale();
     runSmokeCapture(win);
   });
 }
@@ -210,6 +231,20 @@ function setPin(pinned) {
   if (!win) return;
   win.setAlwaysOnTop(pinned, 'screen-saver');
   sendToRenderer('pin-changed', pinned);
+}
+
+// 整体缩放切换：调整窗口内容区尺寸并同步渲染进程与托盘勾选态
+function pushWindowScale() {
+  sendToRenderer('window-scale-changed', windowScale);
+}
+function setWindowScale(scale) {
+  windowScale = scale;
+  windowSettingsStore.save({ scale });
+  if (win && !win.isDestroyed()) {
+    win.setContentSize(currentWindowSize().width, currentWindowSize().height);
+  }
+  pushWindowScale();
+  rebuildTrayMenu();
 }
 
 // ---------- 菜单与托盘 ----------
@@ -276,6 +311,15 @@ function setOpenAtLogin(open) {
 function rebuildTrayMenu() {
   const granted = hasPermission();
   const menu = Menu.buildFromTemplate([
+    {
+      label: '尺寸',
+      submenu: SCALE_LEVELS.map((level) => ({
+        label: `${Math.round(level * 100)}%`,
+        type: 'radio',
+        checked: Math.abs(windowScale - level) < 1e-6,
+        click: () => setWindowScale(level),
+      })),
+    },
     {
       label: '通用',
       submenu: [
@@ -363,6 +407,13 @@ ipcMain.handle('key-stats:get', (event) => {
 // 打星星得分上报：注册到 score-stats（只接受主游戏窗口发来的事实，星星只产生于游戏场景）
 const scoreIpc = registerScoreIpc({ ipcMain, getWindow, store: scoreStatsStore });
 
+// 窗口缩放查询：只接受主游戏窗口发起的请求
+ipcMain.handle('window-scale:get', (event) => {
+  const isTrustedSender = win && !win.isDestroyed() && event.sender === win.webContents;
+  if (!isTrustedSender) return null;
+  return windowScale;
+});
+
 async function bootstrap() {
   createWindow();
   createTray();
@@ -387,6 +438,7 @@ app.on('will-quit', () => {
   keyboardHook.stop();
   keyStats.stop();
   ipcMain.removeHandler('key-stats:get');
+  ipcMain.removeHandler('window-scale:get');
   scoreIpc.dispose();
   desktopIpc.dispose();
 });

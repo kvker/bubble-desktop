@@ -16,8 +16,9 @@ import { mountScoreStars } from './features/score-stars.mjs';
 import { male as maleMaterial, female as femaleMaterial } from '../skins/index.mjs';
 
 // ---------- 常量 ----------
-const W = window.innerWidth;
-const H = window.innerHeight;
+// 逻辑视口固定 360×420：挂件的整体缩放由窗口尺寸与 #game 的 CSS transform 实现，布局不随窗口物理尺寸变化
+const W = 360;
+const H = 420;
 const R = 16;                    // 泡泡半径
 const LAUNCH_X = W / 2;
 const LAUNCH_Y = H - 90;
@@ -66,6 +67,18 @@ const pickColor = () => pickColorIndex(Math.random, COLORS.length);
 const app = new Application();
 await app.init({ width: W, height: H, backgroundAlpha: 0, antialias: true });
 document.getElementById('game').appendChild(app.canvas);
+
+// 整体缩放：窗口内容区 = 逻辑视口 × 缩放档位；#game 固定逻辑尺寸并通过 transform 等比缩放适配
+let activeScale = 1;           // 当前整体缩放档位：hover 命中阈值按比例换算为逻辑坐标
+function applyWindowScale(scaleValue) {
+  const el = document.getElementById('game');
+  if (!el || typeof scaleValue !== 'number' || !Number.isFinite(scaleValue)) return;
+  activeScale = scaleValue;
+  el.style.transform = `scale(${scaleValue})`;
+  el.style.transformOrigin = '0 0';
+}
+window.desktop.onWindowScaleChanged(applyWindowScale);
+window.desktop.getWindowScale().then(applyWindowScale);
 
 const g = new Graphics();        // 全部元素每帧重绘，天然无对象泄漏
 const featureLayer = new Container(); // 自治玩法功能层

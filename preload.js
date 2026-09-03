@@ -12,5 +12,7 @@ contextBridge.exposeInMainWorld('desktop', {
   dragMove: (pos) => ipcRenderer.send('drag-move', pos),
   dragEnd: () => ipcRenderer.send('drag-end'),
   getKeyStats: () => ipcRenderer.invoke('key-stats:get'),
+  getWindowScale: () => ipcRenderer.invoke('window-scale:get'),
+  onWindowScaleChanged: (cb) => ipcRenderer.on('window-scale-changed', (_e, scale) => cb(scale)),
   reportScoreCollected: (value) => ipcRenderer.send('score:collected', value),
 });
